@@ -1,4 +1,4 @@
-# 🌸 My Diary: Monolithic MVP 🌸
+# [My Diary: Monolithic MVP]
 
 Sebuah aplikasi buku harian berbasis terminal (CLI) yang dibangun sepenuhnya menggunakan **smartphone (Android)** melalui lingkungan **Termux**. Proyek ini adalah bukti bahwa keterbatasan alat bukan penghalang untuk mempelajari konsep pemrograman tingkat lanjut seperti **Object-Oriented Programming (OOP)** dan struktur data **JSON**.
 
