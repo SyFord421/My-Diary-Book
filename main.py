@@ -51,19 +51,17 @@ class DiaryBook:
     
         self.cursor.execute('SELECT content FROM notes WHERE id = ?', (id_target,))
         note = self.cursor.fetchone()
-
         if note:
             print(f"Yakin mau hapus: '{note[0]}'?")
-        confirm = input("Ketik 'Y' untuk hapus: ").upper()
-        
-        if confirm == 'Y':
-            self.cursor.execute('DELETE FROM notes WHERE id = ?', (id_target,))
-            self.conn.commit()
-            print("[!] Kenangan telah dilarungkan ke laut penyesalan...")
+            confirm = input("Ketik 'Y' untuk hapus: ").upper()
+            if confirm == 'Y':
+                self.cursor.execute('DELETE FROM notes WHERE id = ?', (id_target,))
+                self.conn.commit()
+                print("[!] Kenangan telah dilarungkan ke laut penyesalan...")
+            else:
+                print("[!] Penghapusan dibatalkan. Masih sayang ya?")
         else:
-            print("[!] Penghapusan dibatalkan. Masih sayang ya?")
-    else:
-        print("[E] ID nggak ketemu, kamu mau hapus bayangan?")
+            print("[E] ID nggak ketemu, kamu mau hapus bayangan?")
 
     def validate_input(self, text):
         if not text.strip():
@@ -116,7 +114,8 @@ class DiaryBook:
 
 if __name__ == "__main__":
     diary = DiaryBook()
-    while True:
+    loop = True
+    while loop:
         try:
             print("\n 1. Tambah\n", "2. Tampilkan semua\n", "3. Hapus catatan\n", "4. Ubah catatan\n","5. Hapus semua Kenangan pahit \n", "6. Keluar")
             while True:
@@ -124,23 +123,22 @@ if __name__ == "__main__":
                 if not choose.isdigit():
                     print("[!] Masukin angka, jangan masukin harapan palsu!")
                     continue 
-                else:
-                    print("[!] Aduh masukin yang bener lah bukan janji manis doang")
 
-            if choose == '1':
-                diary.add_content()
-            elif choose == '2':
-                diary.show_all()
-            elif choose == '3':
-                diary.delete_note()
-            elif choose == '4':
-                diary.update_note()
-            elif choose == '5':
-                diary.clear_all_db()
-            elif choose == '6':
-                break
-            else:
-                ("Hmmmmm")
+                if choose =='1':
+                    diary.add_content()
+                elif choose =='2':
+                    diary.show_all()
+                elif choose =='3':
+                    diary.delete_note()
+                elif choose =='4':
+                    diary.update_note()
+                elif choose =='5':
+                    diary.clear_all_db()
+                elif choose =='6':
+                    loop = False
+                    break
+                else:
+                    ("masukan angka yang benar")
         except Exception as e:
             print(f"[E] {e}")
         
