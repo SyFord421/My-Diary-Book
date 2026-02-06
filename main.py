@@ -10,6 +10,13 @@ class DiaryBook:
         self.cursor = self.conn.cursor()
         self.init_db()
 
+    def __del__(self):
+        try:
+            self.conn.close()
+            print("\n[!] Koneksi database ditutup. Sampai jumpa di catatan galau berikutnya... 👋")
+        except:
+            pass 
+
     def init_db(self):
         with self.conn:
             self.conn.execute('''CREATE TABLE IF NOT EXISTS notes 
@@ -39,17 +46,24 @@ class DiaryBook:
             print("-" * 20)
 
     def delete_note(self):
-        try:
-            self.show_all()
-            id_target = input("\n[!] Masukan ID yang mau dihapus: ")
-            if not id_target.isdigit():
-                print("[E] ID harus angka ya, jangan masukin harapan palsu... 🙄")
-                return
-            self.cursor.execute('''DELETE FROM notes WHERE id = ?''', (id_target,))
+        self.show_all()
+        id_target = input("\n[!] Masukan ID yang mau dihapus: ")
+    
+        self.cursor.execute('SELECT content FROM notes WHERE id = ?', (id_target,))
+        note = self.cursor.fetchone()
+
+        if note:
+            print(f"Yakin mau hapus: '{note[0]}'?")
+        confirm = input("Ketik 'Y' untuk hapus: ").upper()
+        
+        if confirm == 'Y':
+            self.cursor.execute('DELETE FROM notes WHERE id = ?', (id_target,))
             self.conn.commit()
-            print(f"[!] ID {id_target} berhasil dibuang, kayak kenangan mantan!")
-        except Exception as e:
-            print(f"[E] Error pas hapus: {e}")
+            print("[!] Kenangan telah dilarungkan ke laut penyesalan...")
+        else:
+            print("[!] Penghapusan dibatalkan. Masih sayang ya?")
+    else:
+        print("[E] ID nggak ketemu, kamu mau hapus bayangan?")
 
     def validate_input(self, text):
         if not text.strip():
@@ -77,15 +91,39 @@ class DiaryBook:
         except Exception as e:
             print(f"[E] Error {e}: Solusi? Cari pacar baru atau debug ulang.")
 
+    def clear_all_db(self):
+        print("[!] PERINGATAN TINDAKAN INI AKAN MENGHAPUS SELURUH DATABASE")
+        time.sleep(1)
+        print("[!] Kamu yakin mau hapus SEMUA data? Tindakan ini tidak bisa ditarik balik.")
+        time.sleep(1)
+        print("[*] Kayak waktu kamu bilang 'Kita putus', nggak bisa ditarik lagi lho..")
+        confirm = input("Apakah Yakin? Ketik 'SAYONARA' untuk menghapus\n: ").lower().strip()
+        if confirm == 'sayonara':
+            try:
+                self.conn.execute("DELETE FROM notes")
+                self.conn.commit()
+                print("\n[✔] DATABASE BERHASIL DIKOSONGKAN!")
+                print(f"\n[✔] Sayonara to itta Kimi no kimochi wa karanai kedo... 🌸")
+                print("Semua perasaan (dan data) yang terbengkalai sudah dibuang.")
+                print("Database sekarang sepi, sesepi playlist lagu galau jam 2 pagi.")
+            except Exception as e:
+                print(f"[E] Tidak ada satupun yang di hapus karena kamu tidak punya apa-apa")
+        else:
+            print("Chotto Matte!")
+            print("Emang bener, ngelepasin itu nggak semudah ngetik kode.. ☕")
+            print("[!] Sepertinya kamu lebih menyimpan kesakitan daripada membuang-nya 🥀")
+            return
+
 if __name__ == "__main__":
     diary = DiaryBook()
     while True:
         try:
-            print("\n 1. Tambah\n", "2. Tampilkan semua\n", "3. Hapus catatan\n", "4. Ubah catatan\n", "5. Keluar")
+            print("\n 1. Tambah\n", "2. Tampilkan semua\n", "3. Hapus catatan\n", "4. Ubah catatan\n","5. Hapus semua Kenangan pahit \n", "6. Keluar")
             while True:
-                choose = input("Masukan Pilihan[1/2/3/4/5]: ")
-                if choose.isdigit():
-                    break
+                choose = input("Masukan Pilihan[1-6]: ").strip()
+                if not choose.isdigit():
+                    print("[!] Masukin angka, jangan masukin harapan palsu!")
+                    continue 
                 else:
                     print("[!] Aduh masukin yang bener lah bukan janji manis doang")
 
@@ -98,6 +136,8 @@ if __name__ == "__main__":
             elif choose == '4':
                 diary.update_note()
             elif choose == '5':
+                diary.clear_all_db()
+            elif choose == '6':
                 break
             else:
                 ("Hmmmmm")
