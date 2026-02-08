@@ -172,7 +172,7 @@ class DiaryBook:
                     if choose == '7':
                         sys.exit()#untuk fitur keluar langsung
                     else:
-                        ("masukan angka yang benar")
+                        print("masukan angka yang benar")
             except Exception as e:
                 print(f"[E] {e}")
 
