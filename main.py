@@ -2,10 +2,7 @@ import sqlite3
 from datetime import datetime
 import time
 import atexit 
-from colorama import Fore, Style, init
 import sys
-
-init(autoreset=True)#inisiasi colorama
 
 class DiaryBook:
     """inisiasi class utama agar lebih rapih"""
@@ -73,19 +70,15 @@ class DiaryBook:
             print("[√] Catatan tersimpan!")
 
     def show_all(self):
-        """untuk memperlihatkan seluruh data yang tersimpan"""
-        query = ('SELECT * FROM notes')
-        all_data = self.cursor.execute(query).fetchall()
-        if not all_data:
-            print("[E] Diary masih kosong nih...")
-            return
-        print("\n" + "="*30)
-        print("      ISI DIARY KAMU      ")
-        print("="*30)
-        for i in all_data:
-            print(f"[{i[0]}] {i[2]}")
-            print(f"Content: {i[1]}")
-            print("-" * 20)
+        print("=== ISI DIARY KAMU ===")
+        self.cursor.execute('SELECT * FROM notes')
+        data = self.cursor.fetchall()
+        if not data:
+            print("Diary masih kosong.")
+        else:
+            for line in data:
+                print(f"ID: {line[0]} | Waktu: {line[2]}")
+                print(f"Isi: {line[1]}\n" + "-"*20)
 
     def delete_note(self):
         """untuk satu mengahapus catatan tertentu""" 
@@ -176,6 +169,36 @@ class DiaryBook:
             except Exception as e:
                 print(f"[E] {e}")
 
+class SecureDiary(DiaryBook):#<-- Inheritance yang mewarisi semua atribut DiaryBook
+    def __init__(self, db_name="scurediary.db"):
+        super().__init__(db_name)
+        #ini namanya private atribut
+        self.__password = "Admin#1234"
+    
+    def login(self):
+        print(f"{Fore.CYAN}===SCURITY CHECK===")
+        input_pass =input("[?] Masukan Pasword:")
+        if input_pass == self.__password:
+            print(f"{Fore.GREEN} Akses Di Terima Hallo User...")
+            return True
+        else:
+            print(f"{Fore.RED} Pasword salah akses di tolak")
+            return False
+
 if __name__ == "__main__":
     diary= DiaryBook()
-    diary.main_menu()
+    app=SecureDiary()
+    while True:
+        print(" 1. DiaryBook\n", "2. Secure DiaryBook\n", "3. Exit")
+        choose = input("Masukan Pilihan[1|2]: ")
+        if choose == '1':
+            diary.main_menu()
+        elif choose == '2':
+            if app.login():
+                app.main_menu()
+            else:
+                print("Password salah")
+        elif choose == '3':
+            sys.exit()
+        else:
+            print("Input Tidak Valid...")
