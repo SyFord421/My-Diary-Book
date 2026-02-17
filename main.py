@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 import atexit 
 import sys
+from colorama import Fore
 
 class DiaryBook:
     """inisiasi class utama agar lebih rapih"""
